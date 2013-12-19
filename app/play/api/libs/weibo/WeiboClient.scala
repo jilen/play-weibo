@@ -7,7 +7,7 @@ import play.api.libs.ws._
 import scala.concurrent._
 import scala.concurrent.duration._
 
-object Weibo {
+object WeiboClient {
   val timeout = 10.seconds
   val weiboDateFormat = "EEE MMM dd HH:mm:ss Z yyyy"
 

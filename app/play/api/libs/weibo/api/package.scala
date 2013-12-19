@@ -4,8 +4,12 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import java.util.Date
 package object api {
+
+  val weiboDateFormat = "EEE MMM dd HH:mm:ss Z yyyy"
   implicit val GeoReads:Reads[Geo] = Json.reads[Geo]
   implicit val StatusReads: Reads[Status] = Json.reads[Status]
+  implicit val DateReads: Reads[Date] = Reads.dateReads(weiboDateFormat)
+
   //Shit
   implicit val UserReads: Reads[User] = new Reads[User]{
     def reads(json: JsValue) = {
