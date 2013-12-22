@@ -9,6 +9,7 @@ package object api {
   implicit val GeoReads:Reads[Geo] = Json.reads[Geo]
   implicit val StatusReads: Reads[Status] = Json.reads[Status]
   implicit val DateReads: Reads[Date] = Reads.dateReads(weiboDateFormat)
+  implicit val AccessTokenReads: Reads[AccessToken] = Json.reads[AccessToken]
 
   //Shit
   implicit val UserReads: Reads[User] = new Reads[User]{
