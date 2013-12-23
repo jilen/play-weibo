@@ -17,13 +17,16 @@ object WeiboClient {
 
   def validate[R](api: Api[R]) = {
     val params = apiParams(api)
+    println(params)
       (api match {
         case _ : GetApi[_] =>
           get(api.url, params)
         case _ : PostApi[_] =>
           val isMultiPart = params.exists(_._2.isInstanceOf[java.io.File])
           post(api.url, params, isMultiPart)
-      }).map{resp => api.parse(resp.json)
+      }).map{resp =>
+        println(resp.json)
+        api.parse(resp.json)
       }
   }
 
