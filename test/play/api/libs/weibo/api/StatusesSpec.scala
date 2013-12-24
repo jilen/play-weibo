@@ -1,6 +1,7 @@
 package play.api.libs.weibo.api
 
 import org.specs2.mutable.Specification
+import play.api.libs.weibo._
 
 class StatusesSpec extends ApiSpec {
   "'StatusShow' api" should {

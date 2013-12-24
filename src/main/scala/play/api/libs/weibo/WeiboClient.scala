@@ -7,17 +7,24 @@ import scala.concurrent._
 import scala.concurrent.duration._
 import api._
 import scala.language.experimental.macros
+import scala.language.higherKinds
 
 object WeiboClient {
 
   private val logger = play.api.Logger(this.getClass)
   private[weibo] val tokenUrl = "https://api.weibo.com/oauth2/access_token"
 
-  private def apiParams[T <: Api[_]](api: T) = macro Macros.readParamsImpl[T]
+  private[weibo] def apiParams[T <: Api[_]](param: T) = macro Macros.readParamsImpl[T]
+  //TODO Duplicated
+  private[weibo] def camelToUnderscores(name: String) = {
+    "[A-Z\\d]".r.replaceAllIn(name, { m =>
+      "_" + m.group(0).toLowerCase()
+    })
+  }
 
-  def validate[R](api: Api[R]) = {
+
+  def validate[R, A[R] <: Api[R]](api: A[R]): Future[JsResult[R]] = {
     val params = apiParams(api)
-    println(params)
       (api match {
         case _ : GetApi[_] =>
           get(api.url, params)
@@ -25,7 +32,6 @@ object WeiboClient {
           val isMultiPart = params.exists(_._2.isInstanceOf[java.io.File])
           post(api.url, params, isMultiPart)
       }).map{resp =>
-        println(resp.json)
         api.parse(resp.json)
       }
   }
