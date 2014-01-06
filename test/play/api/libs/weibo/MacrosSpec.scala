@@ -6,15 +6,14 @@ import api._
 import play.api.libs.json._
 
 case class Bar(fooBar: String)
-case class Foo(fooBar: String) extends GetApi[String]("bar")
+case class Foo(fooBar: String)
 
 class MacrosSpec extends Specification {
-
-  def params[T](param : T) = macro Macros.readParamsImpl[T]
+  val fooReads = paramReads[Foo]
   "Macros" should {
     "read params" in {
       val foo = Foo("baz")
-      params(foo) must be_==(Map("foo_bar" -> "baz"))
+      fooReads.read(foo) must be_==(Map("foo_bar" -> "baz"))
     }
 
     "read json" in {

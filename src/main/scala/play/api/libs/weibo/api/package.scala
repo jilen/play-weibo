@@ -8,11 +8,15 @@ import scala.language.experimental.macros
 package object api {
 
   val weiboDateFormat = "EEE MMM dd HH:mm:ss Z yyyy"
+  private[weibo] def paramReads[A] = macro Macros.readParamsImpl[A]
+
+  implicit val StatusesShowReads = paramReads[StatusesShow]
+
   private[weibo] def readsUnderscore[A] = macro Macros.readJsonImpl[A]
 
-  implicit val GeoReads:Reads[Geo] = readsUnderscore[Geo]
-  implicit val StatusReads: Reads[Status] = readsUnderscore[Status]
   implicit val DateReads: Reads[Date] = Reads.dateReads(weiboDateFormat)
+  implicit val GeoReads:Reads[Geo] = Json.reads[Geo]
+  implicit val StatusReads: Reads[Status] = Json.reads[Status]
   implicit val AccessTokenReads: Reads[AccessToken] = readsUnderscore[AccessToken]
 
   //Shit

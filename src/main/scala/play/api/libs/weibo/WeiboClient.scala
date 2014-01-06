@@ -14,7 +14,6 @@ object WeiboClient {
   private val logger = play.api.Logger(this.getClass)
   private[weibo] val tokenUrl = "https://api.weibo.com/oauth2/access_token"
 
-  private[weibo] def apiParams[T <: Api[_]](param: T) = macro Macros.readParamsImpl[T]
   //TODO Duplicated
   private[weibo] def camelToUnderscores(name: String) = {
     "[A-Z\\d]".r.replaceAllIn(name, { m =>
@@ -24,11 +23,11 @@ object WeiboClient {
 
 
   def validate[R, A[R] <: Api[R]](api: A[R]): Future[JsResult[R]] = {
-    val params = apiParams(api)
+    val params = api.params
       (api match {
-        case _ : GetApi[_] =>
+        case _ : GetApi[_, _] =>
           get(api.url, params)
-        case _ : PostApi[_] =>
+        case _ : PostApi[_, _] =>
           val isMultiPart = params.exists(_._2.isInstanceOf[java.io.File])
           post(api.url, params, isMultiPart)
       }).map{resp =>

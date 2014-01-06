@@ -3,6 +3,10 @@ import scala.reflect.macros.Context
 import scala.language.experimental.macros
 import play.api.libs.json._
 
+trait ParamReads[T] {
+  def read(t: T): Map[String,Any]
+}
+
 private[weibo] object Macros {
 
   //TODO duplicated
@@ -13,19 +17,29 @@ private[weibo] object Macros {
       })
   }
 
-  def readParamsImpl[T: c.WeakTypeTag](c: Context)(param: c.Expr[T]) = {
+  def readParamsImpl[T: c.WeakTypeTag](c: Context) = {
     import c.universe._
     val mapApply = Select(reify(Map).tree, newTermName("apply"))
     println(weakTypeOf[T])
     val params = weakTypeOf[T].declarations.collect {
       case m : MethodSymbol if m.isCaseAccessor =>
         val paramName = c.literal(m.name.decoded)
-        val paramValue = c.Expr(Select(param.tree, m.name))
+        val paramValue = c.Expr(Select(Ident(newTermName("t")), m.name))
         reify(camelToUnderscores(paramName.splice) -> paramValue.splice).tree
     }
-    c.Expr[Map[String, Any]](Apply(mapApply, params.toList))
+    val asMapImpl = c.Expr[Map[String, Any]](Apply(mapApply, params.toList))
+    reify {
+      new ParamReads[T] {
+        def read(t: T) = asMapImpl.splice
+      }
+    }
   }
 
+
+  /**
+    * Those was copied directly from play-framework, I don't really know how it work
+    * Seems tree are directly copied with showRaw output
+    */
   def readJsonImpl[A: c.WeakTypeTag](c: Context): c.Expr[Reads[A]] = {
     import c.universe._
     import c.universe.Flag._
@@ -49,8 +63,6 @@ private[weibo] object Macros {
       case s =>
         val unapply = s.asMethod
         val unapplyReturnTypes = unapply.returnType match {
-          case TypeRef(_, _, Nil) =>
-            c.abort(c.enclosingPosition, s"Apply of ${companionSymbol} has no parameters. Are you using an empty case class?")
           case TypeRef(_, _, args) =>
             args.head match {
               case t @ TypeRef(_, _, Nil) => Some(List(t))
