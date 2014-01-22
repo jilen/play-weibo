@@ -1,4 +1,4 @@
-package play.api.libs.weibo
+package play.api.weibo
 
 import java.util.Date
 

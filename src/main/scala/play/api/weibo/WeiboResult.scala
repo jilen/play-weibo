@@ -1,4 +1,4 @@
-package play.api.libs.weibo
+package play.api.weibo
 
 import java.util.Date
 /**
@@ -38,18 +38,10 @@ case class RepostTimelineResult(
   nextCursor: Int,
   totalNumber: Int)
 
-case class StatusShowBatchResult(
+case class StatusesShowBatchResult(
   statuses: Seq[Either[DeletedStatus, Status]],
   totalNumber: Int)
 
-case class WeiboApiError(
-  error: String,
-  errorCode: Int,
-  request: String) extends Exception {
-
-  override def getMessage() = s"error: ${error}, code: ${errorCode}: request: ${request}"
-}
-
-object WeiboApiError {
+object ApiErrorCodes {
   val ApiLimits = Set(10022, 10023, 10024)
 }

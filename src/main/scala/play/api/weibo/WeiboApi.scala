@@ -10,16 +10,7 @@ trait Api[R] {
   def execute(): Future[Either[WeiboApiError, R]]
 }
 
-trait ApiReader[T <: Api[_]] {
-  def read[T](api: T): Map[String, Any]
-}
 
-trait ApiParser[R] {
-  def parse(body: String):  Either[WeiboApiError, R]
-}
-
-trait Protocol[A <: Api[R], R] extends ApiReader[A] with ApiParser[R]  {
-}
 
 trait GenericHttpApi[R, T <: Api[R]] extends Api[R] with Http {
   import Http._
@@ -42,11 +33,13 @@ trait HttpApi[R, T <: Api[R]]
 }
 
 
-abstract class HttGetApi[R, A <: Api[R]](implicit protocol: Protocol) extends HttpApi[R, A] { self: A =>
+abstract class HttpGetApi[ A <: Api[R], R](implicit val protocol: Protocol[A, R])
+    extends HttpApi[R, A] with SprayHttp { self: A =>
   val method = Http.GET
 }
 
-trait HttpPostApi[R, A <: Api[R]](implicit protocol: Protocol) extends HttpApi[R, A] { self: A =>
+abstract class HttpPostApi[ A <: Api[R], R](implicit val protocol: Protocol[A, R])
+    extends HttpApi[R, A] with SprayHttp { self: A =>
   val method = Http.POST
 }
 

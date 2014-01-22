@@ -9,6 +9,11 @@ trait Http {
   def post(param: Map[String, Any]): Future[String]
 }
 
+trait SprayHttp extends Http {
+  def get(params: Map[String, Any]): Future[String] = ???
+  def post(param: Map[String, Any]): Future[String] = ???
+}
+
 /**
  * Http constants defines
  */

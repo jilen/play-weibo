@@ -1,7 +1,18 @@
-import play.Project._
-
 name := "play-weibo"
 
-version := "0.0.1"
+version := "1.0-SNAPSHOT"
+
+scalaVersion := "2.10.3"
+
+play.Project.playScalaSettings
+
+libraryDependencies ++= Seq(
+  "org.json4s"  %% "json4s-native" % "3.2.5")
+
+scalaSource in Compile := file("src/main/scala")
+
+sources in doc in Compile := List()
+
+scalaSource in Test := file("src/test/scala")
 
 scalacOptions ++= Seq("-feature")
