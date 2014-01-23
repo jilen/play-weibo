@@ -27,10 +27,22 @@ trait ReflectiveReader[A <: Api[_]] extends ApiReader[A] {
 trait Json4sParser[R] extends ApiParser[R] {
   import org.json4s._
   import org.json4s.native.Serialization.{read, write}
-  implicit val formats = native.Serialization.formats(NoTypeHints)
+  import java.text.SimpleDateFormat
+  import java.util.Date
+
   implicit val m: Manifest[R]
+  val DateFormat = "EEE MMM dd HH:mm:ss Z yyyy"
+  implicit val formats = dateFormats(new SimpleDateFormat(DateFormat))
+
   def parse(body: String) = {
-    read[Either[WeiboApiError, R]](body)
+    val json = native.JsonMethods.parse(body).camelizeKeys
+    json.extract[Either[WeiboApiError, R]]
+  }
+
+  private def dateFormats(format: SimpleDateFormat): Formats = {
+    new DefaultFormats {
+      override val dateFormatter = format
+    }
   }
 }
 
