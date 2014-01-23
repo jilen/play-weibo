@@ -7,22 +7,22 @@ import play.api.libs.concurrent.Execution.Implicits._
  * weibo api abstraction
  */
 trait Api[R] {
-  def execute(): Future[Either[WeiboApiError, R]]
+  def execute(implicit http: Http): Future[Either[WeiboApiError, R]]
 }
 
 
 
-trait GenericHttpApi[R, T <: Api[R]] extends Api[R] with Http {
+trait GenericHttpApi[R, T <: Api[R]] extends Api[R] {
   import Http._
-
-  def protocol: Protocol[T, R]
+   def protocol: Protocol[T, R]
   def method: Method
+  def url: String
 
-  def execute() = {
+  def execute(implicit http: Http) = {
     val params = protocol.read(this)
     method match {
-      case GET => get(params).map(protocol.parse)
-      case POST => post(params).map(protocol.parse)
+      case GET => http.get(url,params).map(protocol.parse)
+      case POST => http.post(url, params).map(protocol.parse)
     }
   }
 }
@@ -33,13 +33,13 @@ trait HttpApi[R, T <: Api[R]]
 }
 
 
-abstract class HttpGetApi[ A <: Api[R], R](implicit val protocol: Protocol[A, R])
-    extends HttpApi[R, A] with SprayHttp { self: A =>
+abstract class HttpGetApi[ A <: Api[R], R](val url: String)(implicit val protocol: Protocol[A, R])
+    extends HttpApi[R, A]{ self: A =>
   val method = Http.GET
 }
 
-abstract class HttpPostApi[ A <: Api[R], R](implicit val protocol: Protocol[A, R])
-    extends HttpApi[R, A] with SprayHttp { self: A =>
+abstract class HttpPostApi[ A <: Api[R], R](val url: String)(implicit val protocol: Protocol[A, R])
+    extends HttpApi[R, A]{ self: A =>
   val method = Http.POST
 }
 
