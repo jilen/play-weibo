@@ -8,13 +8,14 @@ play.Project.playScalaSettings
 
 libraryDependencies ++= Seq(
   "org.json4s"  %% "json4s-native" % "3.2.5",
-  "io.spray"    %  "spray-client"  % "1.2.0"
-)
+  "io.spray"    %  "spray-client"  % "1.2.0")
 
 scalaSource in Compile := file("src/main/scala")
 
-sources in doc in Compile := List()
-
 scalaSource in Test := file("src/test/scala")
+
+sourceDirectories in Test := Seq(
+  file("src/test/scala"),
+  file("src/test/resources"))
 
 scalacOptions ++= Seq("-feature")

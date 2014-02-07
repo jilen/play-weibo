@@ -60,7 +60,7 @@ trait SprayHttp extends Http {
 
 trait SprayHttpConfig {
   implicit val system : akka.actor.ActorSystem
-  implicit val gzipEnable: Boolean
+  val gzipEnable: Boolean
 }
 
 /**
@@ -79,7 +79,6 @@ object Http {
 
   implicit object DefaultHttp extends SprayHttp {
     val config = new PlaySprayConfig(false)
-
   }
 
   implicit object GzipHttp extends {

@@ -1,9 +1,9 @@
 package play.api
 
 package object weibo {
-  type P[A <: Api[R], R] = DefaultProtocol[A, R]
-  type Get[A <: Api[R] , R] = HttpGetApi[A, R]
-  type Post[A <: Api[R], R] = HttpPostApi[A, R]
+  private[weibo] type P[A <: Api[R], R] = DefaultProtocol[A, R]
+  private[weibo] type Get[A <: Api[R] , R] = HttpGetApi[A, R]
+  private[weibo] type Post[A <: Api[R], R] = HttpPostApi[A, R]
 
 
 
