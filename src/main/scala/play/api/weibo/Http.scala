@@ -1,5 +1,6 @@
 package play.api.weibo
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import spray.client.pipelining._
 import spray.http._
@@ -20,14 +21,14 @@ trait Http {
    * Perform http post request, should implement multi-part params
    */
   def post(url: String, param: Map[String, Any]): Future[String]
+
+  val context: ExecutionContext
 }
 
 /**
  * Spray implementation
  */
 trait SprayHttp extends Http {
-
-  private val logger = play.api.Logger(classOf[SprayHttp])
 
   val config: SprayHttpConfig
   import config._
@@ -70,18 +71,4 @@ object Http {
   sealed trait Method
   case object GET extends Method
   case object POST extends Method
-
-  class PlaySprayConfig(val gzipEnable: Boolean) extends SprayHttpConfig {
-    import play.api.libs.concurrent.Akka
-    import play.api.Play.current
-    val system = Akka.system
-  }
-
-  implicit object DefaultHttp extends SprayHttp {
-    val config = new PlaySprayConfig(false)
-  }
-
-  implicit object GzipHttp extends {
-    val config = new PlaySprayConfig(true)
-  }
 }

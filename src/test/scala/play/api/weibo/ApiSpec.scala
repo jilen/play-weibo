@@ -4,10 +4,11 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import akka.actor._
 import com.typesafe.config.ConfigFactory
+import org.specs2.mutable._
 
-trait ApiSpec {
-  lazy val cfg = ConfigFactory.load("http.conf")
-  lazy val testToken = cfg.getString("token.normal")
+abstract class ApiSpec extends Specification {
+  val cfg = ConfigFactory.load("http.conf")
+  val testToken = cfg.getString("token.normal")
   val testAdvancedToken = cfg.getString("token.advanced")
 
   implicit val http = new SprayHttp {
@@ -15,9 +16,10 @@ trait ApiSpec {
       val system = ActorSystem("test")
       val gzipEnable = true
     }
+    val context = config.system.dispatcher
   }
 
-  def awaitApi[A <: Api[R], R, T](api: A)(block: R => T) = {   val res = Await.result(api.execute, Duration.Inf)
-    block(res.right.get)
+  def awaitApi[A[R] <: Api[R], R](api: A[R]) = {
+    Await.result(api.execute, Duration.Inf).right.get
   }
 }
