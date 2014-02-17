@@ -8,6 +8,6 @@ libraryDependencies ++= Seq(
   "org.json4s" %% "json4s-native" % "3.2.5",
   "io.spray" % "spray-client" % "1.2.0",
   "com.typesafe.akka" %% "akka-actor" % "2.2.3",
-  "org.specs2" %% "specs2" % "2.3.8")
+  "org.scalatest" %% "scalatest" % "2.0")
 
 scalacOptions ++= Seq("-feature", "-language:higherKinds")

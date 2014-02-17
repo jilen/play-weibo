@@ -28,11 +28,11 @@ trait Http {
 /**
  * Spray implementation
  */
-trait SprayHttp extends Http {
-
-  val config: SprayHttpConfig
+class SprayHttp(val config: SprayHttpConfig) extends Http {
   import config._
   import system.dispatcher
+
+  val context = system.dispatcher
 
   val unmarshalWeibo: HttpResponse => String = {
     case HttpResponse(code, body, header, _) =>
@@ -53,6 +53,7 @@ trait SprayHttp extends Http {
 
   def get(url: String, params: Map[String, Any]): Future[String] =  {
     val queryUri = Uri(url).copy(query = Query(params.mapValues(_.toString)))
+    println(queryUri)
     pipe(Get(queryUri))
   }
 

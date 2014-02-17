@@ -15,8 +15,16 @@ trait Protocol[A <: Api[R], R] extends ApiReader[A] with ApiParser[R]
 trait ReflectiveReader[A <: Api[_]] extends ApiReader[A] {
   def read[A](api: A) = {
     val fields = api.getClass.getDeclaredFields()
-    fields.map(f => f.getName -> fieldVaule(f, api)).toMap
+    val values = fields.map(f => f.getName -> fieldVaule(f, api))
+    values.collect {
+      case (name, Some(v)) => snakify(name) -> v
+      case (name, v) if v != None => snakify(name) -> v
+    }.toMap
   }
+
+  def snakify(name: String) = "[A-Z\\d]".r.replaceAllIn(name, {m =>
+    "_" + m.group(0).toLowerCase()
+  })
 
   private def fieldVaule(f: Field, obj: Any) = {
     f.setAccessible(true)
@@ -36,6 +44,7 @@ trait Json4sParser[R] extends ApiParser[R] {
 
   def parse(body: String) = {
     val json = native.JsonMethods.parse(body).camelizeKeys
+    println(json)
     json.extract[Either[WeiboApiError, R]]
   }
 

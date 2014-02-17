@@ -4,22 +4,21 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import akka.actor._
 import com.typesafe.config.ConfigFactory
-import org.specs2.mutable._
+import org.scalatest.FlatSpec
 
-abstract class ApiSpec extends Specification {
+abstract class ApiSpec extends FlatSpec {
   val cfg = ConfigFactory.load("http.conf")
   val testToken = cfg.getString("token.normal")
   val testAdvancedToken = cfg.getString("token.advanced")
 
-  implicit val http = new SprayHttp {
-    val config = new SprayHttpConfig {
-      val system = ActorSystem("test")
-      val gzipEnable = true
-    }
-    val context = config.system.dispatcher
+  val config = new SprayHttpConfig {
+    val system = ActorSystem("test")
+    val gzipEnable = true
   }
 
+  implicit val http = new SprayHttp(config)
+
   def awaitApi[A[R] <: Api[R], R](api: A[R]) = {
-    Await.result(api.execute, Duration.Inf).right.get
+    Await.result(api.execute, Duration.Inf)
   }
 }
