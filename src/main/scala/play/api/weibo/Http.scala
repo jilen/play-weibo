@@ -53,11 +53,34 @@ class SprayHttp(val config: SprayHttpConfig) extends Http {
 
   def get(url: String, params: Map[String, Any]): Future[String] =  {
     val queryUri = Uri(url).copy(query = Query(params.mapValues(_.toString)))
-    println(queryUri)
     pipe(Get(queryUri))
   }
 
-  def post(url: String, param: Map[String, Any]): Future[String] = ???
+  def post(url: String, params: Map[String, Any]): Future[String] =  {
+    pipe(buildPost(url, params))
+  }
+
+  private def buildPost(url: String, params: Map[String, Any]) = {
+    val isMultiPart = params.exists {
+      case (_, value: java.io.File)  => true
+      case _ => false
+    }
+    if(isMultiPart) {
+      val parts = params.map {
+        case (name, value: java.io.File) =>
+          BodyPart(value, name)
+        case (name, value) =>
+          BodyPart(HttpEntity(value.toString), name)
+      }.toSeq
+      Post(url, MultipartFormData(parts))
+    } else {
+      val formDatas = params.map {
+        case (name, value) =>
+          name -> value.toString
+      }.toSeq
+      Post(url, FormData(formDatas))
+    }
+  }
 }
 
 trait SprayHttpConfig {

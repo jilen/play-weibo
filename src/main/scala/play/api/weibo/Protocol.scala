@@ -44,7 +44,6 @@ trait Json4sParser[R] extends ApiParser[R] {
 
   def parse(body: String) = {
     val json = native.JsonMethods.parse(body).camelizeKeys
-    println(json)
     json.extract[Either[WeiboApiError, R]]
   }
 

@@ -12,7 +12,6 @@ class StatusesShowBatchSpec extends ApiSpec {
       accessToken = testAdvancedToken,
       ids = "3677163356078857")
     val resEither = awaitApi(api)
-    println(resEither)
     val Right(res) = resEither
     res.statuses should have size 1
   }
