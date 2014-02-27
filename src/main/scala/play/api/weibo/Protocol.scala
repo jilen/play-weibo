@@ -40,7 +40,7 @@ trait Json4sParser[R] extends ApiParser[R] {
 
   implicit val m: Manifest[R]
   val DateFormat = "EEE MMM dd HH:mm:ss Z yyyy"
-  implicit val formats = dateFormats(new SimpleDateFormat(DateFormat))
+  implicit val formats = dateFormats(new SimpleDateFormat(DateFormat, java.util.Locale.ENGLISH))
 
   def parse(body: String) = {
     val json = native.JsonMethods.parse(body).camelizeKeys
