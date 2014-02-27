@@ -3,4 +3,4 @@ project/target
 project/project
 .*
 logs
-*http.conf
+src/test/resources/http.conf
