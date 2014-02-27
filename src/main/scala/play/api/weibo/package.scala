@@ -18,4 +18,7 @@ package object weibo {
 
   private[weibo] implicit object StatusesUpdateP
       extends P[StatusesUpdate, Status]
+
+  private[weibo] implicit object StatusesUploadP
+      extends P[StatusesUpload, Status]
 }

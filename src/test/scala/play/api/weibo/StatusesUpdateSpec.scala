@@ -8,7 +8,7 @@ class StatusesUpdateSpec extends ApiSpec {
    "statuses update api" should "read update" in {
     val api = StatusesUpdate(
       accessToken = testToken,
-      status = "foo")
+      status = Generator.randomString(10))
     val resEither = awaitApi(api)
     val Right(res) = resEither
     res.id should be > 0L

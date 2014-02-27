@@ -1,5 +1,7 @@
 package play.api.weibo
 
+import java.io.File
+
 case class StatusesShowBatch(
   accessToken: String,
   ids: String,
@@ -29,3 +31,14 @@ case class StatusesUpdate(
   val long: Option[String] = None,
   val annotation: Option[String] = None)
     extends Post[StatusesUpdate, Status](url.statuses("update"))
+
+case class StatusesUpload(
+  accessToken: String,
+  status: String,
+  visible: Option[Int] = None,
+  list_id: Option[String] = None,
+  pic: File,
+  lat: Option[Float] = None,
+  long: Option[Float] = None,
+  annotations: Option[String] = None,
+  rip: Option[String] = None) extends Post[StatusesUpload, Status](url.statuses("upload"))
