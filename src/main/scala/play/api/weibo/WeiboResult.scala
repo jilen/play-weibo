@@ -2,10 +2,10 @@ package play.api.weibo
 
 import java.util.Date
 /**
- * *****************************************
- * ************results*********************
- * *****************************************
- */
+  * *****************************************
+  * ************results*********************
+  * *****************************************
+  */
 
 case class FollowersResult(
   users: Seq[User],
@@ -42,6 +42,38 @@ case class StatusesShowBatchResult(
   statuses: Seq[Either[DeletedStatus, Status]],
   totalNumber: Int)
 
-object ApiErrorCodes {
-  val ApiLimits = Set(10022, 10023, 10024)
-}
+case class StatusesMentionsResult(
+  statuses: Seq[Status],
+  totalNumber: Int,
+  previousCursor: Int,
+  nextCursor: Int
+)
+
+
+case class CommentsToMeResult(
+  comments: Seq[Comment],
+  totalNumber: Int,
+  previousCursor: Int,
+  nextCursor: Int
+)
+
+case class CommentsByMeResult(
+  comments: Seq[Comment],
+  totalNumber: Int,
+  previousCursor: Int,
+  nextCursor: Int
+)
+
+case class CommentsMentionsResult(
+  comments: Seq[Comment],
+  totalNumber: Int,
+  previousCursor: Int,
+  nextCursor: Int
+)
+
+case class UserTimelineResult(
+  statuses: Seq[Status],
+  previousCursor: Int,
+  nextCursor: Int,
+  totalNumber: Int
+)

@@ -9,8 +9,6 @@ trait Api[R] {
   def execute(implicit http: Http): Future[Either[WeiboApiError, R]]
 }
 
-
-
 trait GenericHttpApi[R, T <: Api[R]] extends Api[R] {
   import Http._
   def protocol: Protocol[T, R]
