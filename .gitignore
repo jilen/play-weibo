@@ -3,4 +3,4 @@ project/target
 project/project
 .*
 logs
-src/test/resources
+src/test/resources      
