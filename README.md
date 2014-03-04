@@ -1,4 +1,4 @@
-[Weibo](http://api.weibo.com) client for Play!Framework(Scala)
+[Weibo](http://open.weibo.com) client for Play!Framework(Scala)
 ===============================================================
 
 Features
