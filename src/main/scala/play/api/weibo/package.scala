@@ -21,4 +21,7 @@ package object weibo {
 
   private[weibo] implicit object StatusesUploadP
       extends P[StatusesUpload, Status]
+
+  private[weibo] implicit object StatusesTimelineBatchP
+  extends P[StatusesTimelineBatch, StatusesTimelineBatchResult]
 }

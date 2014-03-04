@@ -26,7 +26,7 @@ case class RateLimitStatusResult(
   resetTimeInSeconds: Int,
   userLimit: Int)
 
-case class TimelineBatchResult(
+case class StatusesTimelineBatchResult(
   statuses: Seq[Status],
   previousCursor: Int,
   nextCursor: Int,
