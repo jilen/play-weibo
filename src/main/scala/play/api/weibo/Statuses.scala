@@ -2,6 +2,16 @@ package play.api.weibo
 
 import java.io.File
 
+case class StatusesTimelineBatch(
+  accessToken: String,
+  uids: Option[String] = None,
+  screenNames: Option[String] = None,
+  page: Option[Int] = None,
+  count: Option[Int] = None,
+  baseApp: Option[Int] = None,
+  feature: Option[Int] = None)
+    extends Get[StatusesTimelineBatch, StatusesTimelineBatchResult](url.statuses("timeline_batch"))
+
 case class StatusesShowBatch(
   accessToken: String,
   ids: String,
