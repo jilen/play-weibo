@@ -1,3 +1,8 @@
+import sbtrelease._
+import ReleaseKeys._
+import ReleaseStateTransformations._
+import com.typesafe.sbt.pgp.PgpKeys._
+
 organization := "play-weibo"
 
 name := "play-weibo"
@@ -12,6 +17,19 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.0" % "test")
 
 scalacOptions ++= Seq("-feature", "-language:higherKinds")
+
+releaseSettings
+
+releaseProcess := Seq(
+  checkSnapshotDependencies,
+  inquireVersions,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  releaseTask(publishSigned),
+  setNextVersion,
+  commitNextVersion,
+  pushChanges)
 
 //Publish setttings
 publishMavenStyle := true
@@ -39,5 +57,3 @@ pomExtra := (
     </developer>
   </developers>
 )
-
-releaseSettings
