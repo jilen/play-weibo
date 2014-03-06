@@ -1,9 +1,8 @@
 import sbtrelease._
 import ReleaseKeys._
 import ReleaseStateTransformations._
-import com.typesafe.sbt.pgp.PgpKeys._
 
-organization := "play-weibo"
+organization := "com.github.jilen"
 
 name := "play-weibo"
 
@@ -26,7 +25,6 @@ releaseProcess := Seq(
   setReleaseVersion,
   commitReleaseVersion,
   tagRelease,
-  releaseTask(publishSigned),
   setNextVersion,
   commitNextVersion,
   pushChanges)
