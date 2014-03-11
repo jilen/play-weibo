@@ -2,6 +2,11 @@ package play.api.weibo
 
 import java.io.File
 
+object StatusesConstant {
+  val TrimUser = Some(1)
+  val NotTrimUser = Some(0)
+}
+
 case class StatusesTimelineBatch(
   accessToken: String,
   uids: Option[String] = None,
@@ -9,7 +14,8 @@ case class StatusesTimelineBatch(
   page: Option[Int] = None,
   count: Option[Int] = None,
   baseApp: Option[Int] = None,
-  feature: Option[Int] = None)
+  feature: Option[Int] = None,
+  trimUser: Option[Int] = None)
     extends Get[StatusesTimelineBatch, StatusesTimelineBatchResult](url.statuses("timeline_batch"))
 
 case class StatusesShowBatch(
@@ -18,10 +24,6 @@ case class StatusesShowBatch(
   trimUser: Option[Int] = None
 ) extends HttpGetApi[StatusesShowBatch, StatusesShowBatchResult](url.statuses("show_batch"))
 
-object StatusesShowBatch {
-  val TrimUser = Some(1)
-  val NotTrimUser = Some(0)
-}
 
 case class StatusesMentions(
   accessToken: String,
