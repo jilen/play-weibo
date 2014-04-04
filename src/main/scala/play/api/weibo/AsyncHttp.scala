@@ -5,45 +5,52 @@ import com.ning.http.client.{Request, Response}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Promise
 import com.ning.http.client.{FilePart, StringPart}
+import org.jboss.netty.handler.codec.embedder.CodecEmbedderException
 
 class AsyncHttp(cfg: AsyncHttpConfig) extends Http {
+  import cfg._
+  implicit val context: ExecutionContext = cfg.context
 
-  import cfg.{asyncHttpClient => cli}
   def get(url: String, params: Map[String, Any]) = {
-    val builder = params.foldLeft(cli.prepareGet(url)) {
+    execute(prepareGet(url,params))
+  }
+
+  def post(url: String, params: Map[String, Any]) = {
+    execute(preparePost(url, params))
+  }
+
+  private def prepareGet(url: String, params: Map[String, Any]) = {
+    val builder = params.foldLeft(gziped.prepareGet(url)) {
       case (builder, (name, value)) =>
         builder.addQueryParameter(name, value.toString)
     }
-    execute(builder.build())
+    builder.build()
   }
 
-
-
-  def post(url: String, params: Map[String, Any]) = {
+  private def preparePost(url: String, params: Map[String, Any]) = {
     val isMultiPart = params.exists { p =>
       val (name, value) = p
       value.isInstanceOf[java.io.File]
     }
-
     val builder = if(isMultiPart) {
-      params.foldLeft(cli.preparePost(url)) {
+      params.foldLeft(gziped.preparePost(url)) {
         case (builder, (name, value: java.io.File)) =>
           builder.addBodyPart(new FilePart(name, value, null, null))
         case (builder, (name, value)) =>
           builder.addBodyPart(new StringPart(name, value.toString))
       }
     } else {
-      params.foldLeft(cli.preparePost(url)) {
+      params.foldLeft(gziped.preparePost(url)) {
         case (builder, (name, value)) =>
           builder.addParameter(name, value.toString)
       }
     }
-    execute(builder.build())
+    builder.build()
   }
 
-  val context: ExecutionContext = cfg.context
 
-  private def execute(request: Request) = {
+
+  private def executeRequest(cli: AsyncHttpClient, request: Request) = {
     import com.ning.http.client.AsyncCompletionHandler
     val result = Promise[String]()
     cli.executeRequest(request, new AsyncCompletionHandler[Response] {
@@ -54,21 +61,44 @@ class AsyncHttp(cfg: AsyncHttpConfig) extends Http {
     })
     result.future
   }
+
+  private def execute(request: Request) = {
+    executeRequest(gziped, request).recoverWith {
+      case e: CodecEmbedderException =>
+        executeRequest(plain, request)
+    }
+  }
 }
 
 case class AsyncHttpConfig(
   context: ExecutionContext,
-  asyncHttpClient: AsyncHttpClient
+  gziped: AsyncHttpClient,
+  plain: AsyncHttpClient
 )
 
 object AsyncHttp {
 
-  def withConfig(context: ExecutionContext, cfg: AsyncHttpClientConfig) = {
+  def withConfig(
+    context: ExecutionContext,
+    cfg: AsyncHttpClientConfig.Builder) = {
     new AsyncHttp(
       AsyncHttpConfig(
-        context = scala.concurrent.ExecutionContext.global,
-        asyncHttpClient = new AsyncHttpClient(cfg)
+        context = context,
+        gziped = new AsyncHttpClient(cfg.setCompressionEnabled(true).build()),
+        plain = new AsyncHttpClient(cfg.setCompressionEnabled(false).build())
       )
+    )
+  }
+
+  def withClient(
+    context: ExecutionContext,
+    plain: AsyncHttpClient,
+    gziped: AsyncHttpClient) =  {
+    new AsyncHttp(
+      AsyncHttpConfig(
+        context = context,
+        gziped = gziped,
+        plain = plain)
     )
   }
 }

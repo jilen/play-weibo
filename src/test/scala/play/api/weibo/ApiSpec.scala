@@ -22,8 +22,7 @@ abstract class ApiSpec extends FlatSpec {
     val cfgBuilder = new AsyncHttpClientConfig.Builder().setCompressionEnabled(true)
     AsyncHttp.withConfig(
       context = scala.concurrent.ExecutionContext.global,
-      cfg = cfgBuilder.build()
-    )
+      cfg = cfgBuilder)
   }
 
   def awaitApi[A[R] <: Api[R], R](api: A[R]) = {
